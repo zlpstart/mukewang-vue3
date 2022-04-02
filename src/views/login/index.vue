@@ -1,38 +1,87 @@
 <template>
   <div class="login_container">
-    <el-form class="login-form">
+    <el-form class="login-form" :model="loginForm" :rules="loginRules">
       <div class="title_container">
         <h3 class="title">用户登录</h3>
       </div>
       <!-- username -->
-      <el-form-item>
+      <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon="user"></svg-icon>
         </span>
-        <el-input placeholder="username" name="username" type="text"></el-input>
+        <el-input
+          v-model="loginForm.username"
+          placeholder="username"
+          name="username"
+          type="text"
+        ></el-input>
       </el-form-item>
       <!-- password -->
-      <el-form-item>
+      <el-form-item prop="password">
         <span class="svg-container">
           <svg-icon icon="password"></svg-icon>
         </span>
-        <el-input placeholder="password" name="password"></el-input>
+        <el-input
+          v-model="loginForm.password"
+          placeholder="password"
+          name="password"
+          :type="passwordType"
+        ></el-input>
         <span class="show-pwd">
-          <span class="svg-container">
-            <svg-icon icon="eye"></svg-icon>
+          <span class="svg-container" @click="onChangePwdType">
+            <svg-icon
+              :icon="passwordType === 'password' ? 'eye' : 'eye-open'"
+            ></svg-icon>
           </span>
         </span>
       </el-form-item>
       <!-- 登录按钮 -->
-      <el-button type="primary" style="width: 100%; margin-bottom: 30px"
-        >登录</el-button
-      >
+      <el-button type="primary" style="width: 100%; margin-bottom: 30px">
+        登录
+      </el-button>
     </el-form>
   </div>
 </template>
 
 <script setup>
-import {} from 'vue'
+import { ref } from 'vue'
+import { validatePassword } from './rules'
+// 数据源
+const loginForm = ref({
+  username: 'super-admin',
+  password: '123456'
+})
+
+// 验证规则
+const loginRules = ref({
+  username: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: '用户名为必填项'
+    }
+  ],
+  password: [
+    {
+      required: true,
+      trigger: 'blur',
+      validator: validatePassword()
+    }
+  ]
+})
+
+// 处理密码框文本显示
+const passwordType = ref('password')
+
+// template中绑定的方法直接声明
+const onChangePwdType = () => {
+  // 当passwordType的值为password时，改为text
+  if (passwordType.value === 'password') {
+    passwordType.value = 'text'
+  } else {
+    passwordType.value = 'password'
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -132,5 +181,11 @@ $cursor: #fff;
     cursor: pointer;
     user-select: none;
   }
+}
+:deep(.el-input__inner) {
+  box-shadow: none !important;
+}
+:deep(.el-input__inner:focus) {
+  box-shadow: 0 0 0 1px var(--el-input-focus-border-color) inset;
 }
 </style>
