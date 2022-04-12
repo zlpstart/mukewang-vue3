@@ -1,6 +1,11 @@
 <template>
   <div class="login_container">
-    <el-form class="login-form" :model="loginForm" :rules="loginRules">
+    <el-form
+      class="login-form"
+      ref="loginFromRef"
+      :model="loginForm"
+      :rules="loginRules"
+    >
       <div class="title_container">
         <h3 class="title">用户登录</h3>
       </div>
@@ -36,7 +41,12 @@
         </span>
       </el-form-item>
       <!-- 登录按钮 -->
-      <el-button type="primary" style="width: 100%; margin-bottom: 30px">
+      <el-button
+        :loading="loading"
+        @click="handlerLogin"
+        type="primary"
+        style="width: 100%; margin-bottom: 30px"
+      >
         登录
       </el-button>
     </el-form>
@@ -46,6 +56,7 @@
 <script setup>
 import { ref } from 'vue'
 import { validatePassword } from './rules'
+import { useStore } from 'vuex'
 // 数据源
 const loginForm = ref({
   username: 'super-admin',
@@ -81,6 +92,30 @@ const onChangePwdType = () => {
   } else {
     passwordType.value = 'password'
   }
+}
+
+// 处理登录
+const loading = ref(false)
+const store = useStore()
+const loginFromRef = ref()
+const handlerLogin = () => {
+  // 1.进行表单校验
+  loginFromRef.value.validate((valid) => {
+    if (!valid) return
+    // 2.触发登录动作
+    loading.value = true
+    store
+      .dispatch('user/login', loginForm.value)
+      .then((res) => {
+        console.log(res)
+        loading.value = false
+        // 3.进行登录后处理
+      })
+      .catch((err) => {
+        console.log(err)
+        loading.value = false
+      })
+  })
 }
 </script>
 

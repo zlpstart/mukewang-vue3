@@ -4,7 +4,7 @@ import request from '@/utils/request'
 // return promise对象
 export const login = (data) => {
   return request({
-    url: '/sys/login',
+    url: '/api/sys/login',
     method: 'POST',
     data
   })
